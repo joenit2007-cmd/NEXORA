@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" fill="none">
+  <defs>
+    <linearGradient id="nexGrad" x1="8" y1="6" x2="56" y2="58" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#00D4FF"/>
+      <stop offset="100%" stop-color="#2563EB"/>
+    </linearGradient>
+  </defs>
+  <path d="M32 4L56 14V30C56 45.4 45.6 56.6 32 60C18.4 56.6 8 45.4 8 30V14L32 4Z" fill="#0B132B" stroke="url(#nexGrad)" stroke-width="3"/>
+  <path d="M21 41V23L43 41V23" stroke="url(#nexGrad)" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="21" cy="23" r="2.6" fill="#00D4FF"/>
+  <circle cx="43" cy="41" r="2.6" fill="#3B82F6"/>
+</svg>

@@ -1,0 +1,216 @@
+{% extends "base.html" %}
+{% block title %}Phishing Email Analyzer — NEXORA{% endblock %}
+{% block page_heading %}Phishing Email &amp; URL Threat Analyzer{% endblock %}
+{% block page_subheading %}Static hybrid Scikit-learn ML + rule-based inspection — submitted URLs are NEVER visited or executed{% endblock %}
+
+{% block content %}
+<div class="row g-3 mb-4">
+  <!-- Analyzer Form -->
+  <div class="col-lg-7">
+    <div class="soc-card h-100">
+      <div class="soc-card-header flex-wrap">
+        <h2 class="soc-card-title"><i class="bi bi-envelope-exclamation text-info"></i> Inspect Suspicious Email</h2>
+        <div class="d-flex gap-1">
+          <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2" data-phish-preset="high">High-Risk Sample</button>
+          <button type="button" class="btn btn-sm btn-outline-warning py-0 px-2" data-phish-preset="suspicious">Suspicious Sample</button>
+          <button type="button" class="btn btn-sm btn-outline-success py-0 px-2" data-phish-preset="safe">Safe Sample</button>
+        </div>
+      </div>
+      <div class="soc-card-body">
+        <form method="post" action="{{ url_for('phishing.analyze') }}" data-loading-text="Analyzing email indicators...">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label class="form-label" for="phishSender">Sender Address / Display Name</label>
+              <input type="text" class="form-control font-mono" id="phishSender" name="sender" placeholder="alerts@suspicious-domain.xyz">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label" for="phishSubject">Subject Line</label>
+              <input type="text" class="form-control" id="phishSubject" name="subject" placeholder="Urgent: Verify your account within 24 hours">
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="phishUrls">Suspicious URL(s) (Optional — Analyzed Statically, Never Fetched)</label>
+            <input type="text" class="form-control font-mono" id="phishUrls" name="urls" placeholder="http://198.51.100.12/login, https://bit.ly/example">
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="phishContent">Email Body Content</label>
+            <textarea class="form-control" id="phishContent" name="content" rows="5" placeholder="Paste suspicious email message text here..."></textarea>
+          </div>
+          <button type="submit" class="btn btn-nexora">
+            <i class="bi bi-cpu me-1"></i> Analyze Message
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ML Model Evaluation Metrics Card -->
+  <div class="col-lg-5">
+    <div class="soc-card h-100">
+      <div class="soc-card-header">
+        <h2 class="soc-card-title"><i class="bi bi-bar-chart-line text-info"></i> Classifier &amp; Evaluation Status</h2>
+        <span class="badge-soc {% if model_metrics.available %}severity-low{% else %}severity-medium{% endif %}">
+          {% if model_metrics.available %}Hybrid ML Active{% else %}Rule-Based Mode{% endif %}
+        </span>
+      </div>
+      <div class="soc-card-body">
+        {% if model_metrics.available %}
+          <p class="small text-secondary mb-3">
+            <strong>Algorithm:</strong> {{ model_metrics.algorithm }}<br>
+            <strong>Dataset:</strong> <code>{{ model_metrics.dataset_file }}</code> ({{ model_metrics.total_samples }} labeled messages: {{ model_metrics.phishing_samples }} phishing / {{ model_metrics.legitimate_samples }} legitimate)<br>
+            <strong>Holdout Split:</strong> {{ model_metrics.train_size }} train / {{ model_metrics.test_size }} test (seed={{ model_metrics.random_state }})
+          </p>
+          <div class="row g-2 text-center mb-3">
+            <div class="col-6">
+              <div class="p-2 rounded bg-dark bg-opacity-50 border border-secondary-subtle">
+                <div class="small text-secondary">Test Accuracy</div>
+                <div class="font-mono fs-5 fw-bold text-info">{{ "%.1f"|format(model_metrics.accuracy * 100) }}%</div>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="p-2 rounded bg-dark bg-opacity-50 border border-secondary-subtle">
+                <div class="small text-secondary">F1 Score</div>
+                <div class="font-mono fs-5 fw-bold text-info">{{ "%.1f"|format(model_metrics.f1_score * 100) }}%</div>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="p-2 rounded bg-dark bg-opacity-50 border border-secondary-subtle">
+                <div class="small text-secondary">Precision</div>
+                <div class="font-mono fw-semibold">{{ "%.1f"|format(model_metrics.precision * 100) }}%</div>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="p-2 rounded bg-dark bg-opacity-50 border border-secondary-subtle">
+                <div class="small text-secondary">Recall</div>
+                <div class="font-mono fw-semibold">{{ "%.1f"|format(model_metrics.recall * 100) }}%</div>
+              </div>
+            </div>
+          </div>
+          <div class="small text-secondary font-mono">
+            Confusion Matrix (Test): TP={{ model_metrics.confusion_matrix.tp }}, TN={{ model_metrics.confusion_matrix.tn }}, FP={{ model_metrics.confusion_matrix.fp }}, FN={{ model_metrics.confusion_matrix.fn }}
+          </div>
+        {% else %}
+          <p class="small text-warning">{{ model_metrics.reason }}</p>
+        {% endif %}
+        <hr class="border-secondary-subtle">
+        <div class="small text-secondary">
+          <i class="bi bi-shield-lock text-info me-1"></i>
+          <strong>Zero Network Fetch Guarantee:</strong> URLs are parsed purely lexically via Python's <code>urllib.parse</code> without DNS lookups or HTTP requests.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Selected Result Inspection -->
+{% if selected %}
+<div class="soc-card mb-4">
+  <div class="soc-card-header flex-wrap">
+    <div>
+      <h2 class="soc-card-title"><i class="bi bi-clipboard-data text-info"></i> Analysis Breakdown: {{ selected.subject }}</h2>
+      <div class="small text-secondary font-mono">Sender: {{ selected.sender }} &bull; Method: {{ selected.detection_method }}</div>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+      <span class="font-mono fw-bold fs-5">{{ "%.1f"|format(selected.risk_score) }}/100</span>
+      <span class="badge-soc {% if selected.risk_level == 'High Risk' %}severity-critical{% elif selected.risk_level == 'Suspicious' %}severity-medium{% else %}severity-low{% endif %}">
+        {{ selected.risk_level }}
+      </span>
+    </div>
+  </div>
+  <div class="soc-card-body">
+    <div class="row g-3 mb-3">
+      <div class="col-md-8">
+        <div class="small text-secondary text-uppercase fw-semibold mb-1">Classification Explanation</div>
+        <p class="mb-2">{{ selected.explanation }}</p>
+        <div class="small text-secondary text-uppercase fw-semibold mb-1">Recommended Action</div>
+        <p class="mb-0 text-info">{{ selected.recommended_action }}</p>
+      </div>
+      <div class="col-md-4">
+        <div class="p-3 rounded bg-dark bg-opacity-50 border border-secondary-subtle small">
+          <div class="d-flex justify-content-between mb-1">
+            <span class="text-secondary">Rule-Based Score:</span>
+            <span class="font-mono fw-semibold">{{ "%.1f"|format(selected.rule_score) }}/100</span>
+          </div>
+          <div class="d-flex justify-content-between mb-1">
+            <span class="text-secondary">ML Probability:</span>
+            <span class="font-mono fw-semibold">
+              {% if selected.ml_probability is not none %}{{ "%.1f"|format(selected.ml_probability * 100) }}%{% else %}N/A{% endif %}
+            </span>
+          </div>
+          <div class="d-flex justify-content-between">
+            <span class="text-secondary">URLs Extracted:</span>
+            <span class="font-mono fw-semibold">{{ selected.urls|length }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% if selected.indicators %}
+    <h3 class="small text-uppercase text-secondary fw-bold mb-2">Triggered Risk Indicators ({{ selected.indicators|length }})</h3>
+    <div class="table-responsive">
+      <table class="table table-soc table-sm">
+        <thead>
+          <tr>
+            <th>Category</th>
+            <th>Severity</th>
+            <th>Observed Evidence</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for ind in selected.indicators %}
+          <tr>
+            <td class="fw-semibold">{{ ind.category }}</td>
+            <td><span class="badge-soc {{ severity_badge(ind.severity) }}">{{ ind.severity }}</span></td>
+            <td class="small">{{ ind.detail }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endif %}
+
+<!-- History Table -->
+<div class="soc-card">
+  <div class="soc-card-header">
+    <h2 class="soc-card-title"><i class="bi bi-clock-history text-info"></i> Phishing Analysis History</h2>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-soc table-hover">
+      <thead>
+        <tr>
+          <th>Timestamp</th>
+          <th>Sender</th>
+          <th>Subject</th>
+          <th>Risk Level</th>
+          <th>Score</th>
+          <th>Method</th>
+          <th class="text-end">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in analyses %}
+        <tr class="{% if selected and selected.id == item.id %}table-active{% endif %}">
+          <td class="font-mono small text-secondary">{{ item.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+          <td class="font-mono small">{{ item.sender|truncate_text(35) }}</td>
+          <td>{{ item.subject|truncate_text(45) }}</td>
+          <td>
+            <span class="badge-soc {% if item.risk_level == 'High Risk' %}severity-critical{% elif item.risk_level == 'Suspicious' %}severity-medium{% else %}severity-low{% endif %}">
+              {{ item.risk_level }}
+            </span>
+          </td>
+          <td class="font-mono fw-semibold">{{ "%.1f"|format(item.risk_score) }}</td>
+          <td class="small text-secondary">{{ item.detection_method }}</td>
+          <td class="text-end"><a href="{{ url_for('phishing.index', analysis_id=item.id) }}" class="btn btn-sm btn-outline-info">Inspect</a></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="7" class="text-center py-4 text-secondary">No emails analyzed yet. Use the form or sample presets above.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

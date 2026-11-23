@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% block title %}Vulnerability Assessment — NEXORA{% endblock %}
+{% block page_heading %}Vulnerability Assessment Engine{% endblock %}
+{% block page_subheading %}Transparent, evidence-based port, service, and HTTP security configuration checks for authorized targets{% endblock %}
+
+{% block content %}
+<div class="row g-3 mb-4">
+  <div class="col-lg-7">
+    <div class="soc-card h-100">
+      <div class="soc-card-header">
+        <h2 class="soc-card-title"><i class="bi bi-shield-exclamation text-info"></i> Launch Authorized Vulnerability Assessment</h2>
+        <button type="button" class="btn btn-sm btn-outline-info py-0 px-2" data-target-preset="127.0.0.1" data-ports-preset="21,22,23,80,135,443,445,3306,3389,5000,8000,8080">Localhost Preset</button>
+      </div>
+      <div class="soc-card-body">
+        <form method="post" action="{{ url_for('vulnerabilities.assess') }}" data-loading-text="Assessing target services...">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label class="form-label" for="vulnTargetInput">Authorized Target IP / Host</label>
+              <input type="text" class="form-control font-mono" id="vulnTargetInput" name="target" value="127.0.0.1" required placeholder="127.0.0.1 or 192.168.x.x">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label" for="vulnPortsInput">Port Scope (Optional, max 100 ports)</label>
+              <input type="text" class="form-control font-mono" id="vulnPortsInput" name="port_spec" placeholder="Default: 20 common service ports">
+            </div>
+          </div>
+          <div class="form-check mb-3 p-2 px-3 rounded border border-info-subtle bg-dark bg-opacity-50">
+            <input class="form-check-input ms-0 me-2" type="checkbox" id="vulnAuthConfirm" name="authorized_confirmed" required>
+            <label class="form-check-label small" for="vulnAuthConfirm">
+              I confirm explicit authorization to perform non-destructive service and configuration checks against this local/private lab target.
+            </label>
+          </div>
+          <button type="submit" class="btn btn-nexora">
+            <i class="bi bi-search me-1"></i> Run Assessment
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-5">
+    <div class="soc-card h-100">
+      <div class="soc-card-header">
+        <h2 class="soc-card-title"><i class="bi bi-journal-check text-info"></i> Assessment History</h2>
+      </div>
+      <div class="table-responsive" style="max-height:250px;">
+        <table class="table table-soc table-hover table-sm">
+          <thead>
+            <tr>
+              <th>Target</th>
+              <th>Findings</th>
+              <th>C / H / M / L</th>
+              <th>Date</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for a in assessments %}
+            <tr class="{% if selected and selected.id == a.id %}table-active{% endif %}">
+              <td class="font-mono small text-info">{{ a.target }}</td>
+              <td class="font-mono fw-semibold">{{ a.findings_count }}</td>
+              <td class="font-mono small">
+                <span class="text-danger">{{ a.critical_count }}</span> /
+                <span class="text-warning">{{ a.high_count }}</span> /
+                <span>{{ a.medium_count }}</span> /
+                <span class="text-success">{{ a.low_count }}</span>
+              </td>
+              <td class="font-mono small text-secondary">{{ a.created_at.strftime('%m-%d %H:%M') }}</td>
+              <td class="text-end"><a href="{{ url_for('vulnerabilities.index', assessment_id=a.id) }}" class="btn btn-sm btn-outline-info py-0 px-2">View</a></td>
+            </tr>
+            {% else %}
+            <tr><td colspan="5" class="text-center py-4 text-secondary small">No vulnerability assessments executed yet.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Detailed Findings -->
+<div class="soc-card">
+  <div class="soc-card-header flex-wrap">
+    <div>
+      <h2 class="soc-card-title"><i class="bi bi-bug text-info"></i> Evidence-Based Security Findings</h2>
+      {% if selected %}
+        <div class="small text-secondary mt-1">{{ selected.summary }}</div>
+      {% endif %}
+    </div>
+    <span class="badge-soc severity-info">Transparent Logic &bull; Zero Fabricated CVEs</span>
+  </div>
+  <div class="soc-card-body">
+    {% if selected_findings %}
+      <div class="d-flex flex-column gap-3">
+        {% for f in selected_findings %}
+        <div class="p-3 rounded border border-secondary-subtle bg-dark bg-opacity-50">
+          <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-2">
+            <div>
+              <h3 class="h6 mb-1 fw-bold">{{ f.title }}</h3>
+              <div class="small font-mono text-secondary">
+                Host: <span class="text-info">{{ f.affected_host }}</span> &nbsp;|&nbsp;
+                Port/Service: <span class="text-light">{{ f.port_service }}</span>
+              </div>
+            </div>
+            <span class="badge-soc {{ severity_badge(f.severity) }}">{{ f.severity }}</span>
+          </div>
+          <div class="row g-3 small mt-1">
+            <div class="col-md-6">
+              <div class="text-secondary fw-semibold text-uppercase" style="font-size:0.7rem;">Description</div>
+              <p class="mb-2">{{ f.description }}</p>
+              <div class="text-secondary fw-semibold text-uppercase" style="font-size:0.7rem;">Observed Evidence</div>
+              <p class="mb-0 font-mono text-info" style="font-size:0.8rem;">{{ f.evidence }}</p>
+            </div>
+            <div class="col-md-6">
+              <div class="text-secondary fw-semibold text-uppercase" style="font-size:0.7rem;">Potential Impact</div>
+              <p class="mb-2">{{ f.potential_impact }}</p>
+              <div class="text-secondary fw-semibold text-uppercase" style="font-size:0.7rem;">Recommended Remediation</div>
+              <p class="mb-0 text-success-emphasis">{{ f.recommended_remediation }}</p>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="text-center py-4 text-secondary">
+        No findings to display. Launch an authorized target assessment above (or load the Demo Dataset from the Dashboard).
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

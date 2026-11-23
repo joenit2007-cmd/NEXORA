@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+{% block title %}Intelligent Log Analyzer — NEXORA{% endblock %}
+{% block page_heading %}Intelligent Log Analyzer{% endblock %}
+{% block page_subheading %}Parse .log, .txt, and .csv telemetry for failed logins, brute-force windows, and suspicious IP patterns{% endblock %}
+
+{% block content %}
+<div class="row g-3 mb-4">
+  <!-- Upload Panel -->
+  <div class="col-lg-7">
+    <div class="soc-card h-100">
+      <div class="soc-card-header">
+        <h2 class="soc-card-title"><i class="bi bi-cloud-upload text-info"></i> Upload Log File for Analysis</h2>
+        <span class="badge-soc severity-info">Passive Read-Only Parsing</span>
+      </div>
+      <div class="soc-card-body">
+        <form method="post" action="{{ url_for('logs.upload') }}" enctype="multipart/form-data" data-loading-text="Analyzing log telemetry...">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <div class="mb-3">
+            <label class="form-label" for="log_file">Select Security or System Log (.log, .txt, .csv — Max 5 MB)</label>
+            <input class="form-control" type="file" id="log_file" name="log_file" accept=".log,.txt,.csv" required>
+            <div class="form-text text-secondary">Uploaded files are strictly validated, never executed, and analyzed statically.</div>
+          </div>
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label class="form-label" for="brute_force_threshold">Brute-Force Threshold (Failed Attempts)</label>
+              <input type="number" class="form-control" id="brute_force_threshold" name="brute_force_threshold" min="2" max="100" value="{{ current_user.brute_force_threshold }}">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label" for="window_minutes">Detection Sliding Window (Minutes)</label>
+              <input type="number" class="form-control" id="window_minutes" name="window_minutes" min="1" max="1440" value="{{ current_user.brute_force_window_minutes }}">
+            </div>
+          </div>
+          <button type="submit" class="btn btn-nexora">
+            <i class="bi bi-cpu me-1"></i> Analyze Uploaded Log
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Sample Logs -->
+  <div class="col-lg-5">
+    <div class="soc-card h-100">
+      <div class="soc-card-header">
+        <h2 class="soc-card-title"><i class="bi bi-collection-play text-info"></i> Bundled Sample Datasets</h2>
+      </div>
+      <div class="soc-card-body d-flex flex-column gap-2">
+        <p class="small text-secondary mb-2">Test the parser immediately on curated authentication, CSV, and system logs:</p>
+        {% for fname, label in sample_files.items() %}
+        <div class="p-2 px-3 rounded border border-secondary-subtle bg-dark bg-opacity-50 d-flex align-items-center justify-content-between gap-2">
+          <div>
+            <div class="font-mono small text-info">{{ fname }}</div>
+            <div class="text-secondary" style="font-size:0.75rem;">{{ label }}</div>
+          </div>
+          <form method="post" action="{{ url_for('logs.run_sample', sample_name=fname) }}" class="m-0">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="btn btn-sm btn-nexora-outline">Run</button>
+          </form>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Analysis History -->
+<div class="soc-card mb-4">
+  <div class="soc-card-header">
+    <h2 class="soc-card-title"><i class="bi bi-clock-history text-info"></i> Log Analysis History</h2>
+    <span class="small text-secondary">{{ analyses|length }} record(s)</span>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-soc table-hover">
+      <thead>
+        <tr>
+          <th>File</th>
+          <th>Size</th>
+          <th>Parsed Events</th>
+          <th>Failed Logins</th>
+          <th>Brute-Force</th>
+          <th>Suspicious IPs</th>
+          <th>Analyzed At</th>
+          <th class="text-end">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in analyses %}
+        <tr>
+          <td class="font-mono small fw-semibold">{{ item.original_filename }}</td>
+          <td class="small text-secondary">{{ item.file_size|format_bytes }}</td>
+          <td class="font-mono">{{ item.parsed_events }}</td>
+          <td class="font-mono text-warning">{{ item.failed_logins }}</td>
+          <td>
+            {% if item.brute_force_count > 0 %}
+              <span class="badge-soc severity-critical">{{ item.brute_force_count }} Detected</span>
+            {% else %}
+              <span class="badge-soc severity-low">0</span>
+            {% endif %}
+          </td>
+          <td class="font-mono">{{ item.suspicious_ips|length }}</td>
+          <td class="font-mono small text-secondary">{{ item.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+          <td class="text-end">
+            <a href="{{ url_for('logs.detail', analysis_id=item.id) }}" class="btn btn-sm btn-nexora-outline">Inspect</a>
+            <a href="{{ url_for('logs.export_csv', analysis_id=item.id) }}" class="btn btn-sm btn-outline-secondary" title="Export CSV">
+              <i class="bi bi-download"></i>
+            </a>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="8" class="text-center py-4 text-secondary">No log files analyzed yet. Upload a log file or run one of the bundled samples above.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% if latest and latest_events %}
+<div class="soc-card">
+  <div class="soc-card-header">
+    <h2 class="soc-card-title"><i class="bi bi-list-ul text-info"></i> Latest Parsed Events — {{ latest.original_filename }}</h2>
+    <a href="{{ url_for('logs.detail', analysis_id=latest.id) }}" class="btn btn-sm btn-nexora-outline">Full Investigation View</a>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-soc table-hover">
+      <thead>
+        <tr>
+          <th>Timestamp</th>
+          <th>IP Address</th>
+          <th>Username</th>
+          <th>Event Type</th>
+          <th>Severity</th>
+          <th>Detection Reason</th>
+          <th>Recommended Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for ev in latest_events[:25] %}
+        <tr>
+          <td class="font-mono small text-secondary">{{ ev.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+          <td class="font-mono small text-info">{{ ev.source_ip or 'N/A' }}</td>
+          <td class="font-mono small">{{ ev.username or 'N/A' }}</td>
+          <td class="fw-medium">{{ ev.event_type }}</td>
+          <td><span class="badge-soc {{ severity_badge(ev.severity) }}">{{ ev.severity }}</span></td>
+          <td class="small">{{ ev.detection_reason }}</td>
+          <td class="small text-secondary">{{ ev.recommended_action }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

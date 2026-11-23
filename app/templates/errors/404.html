@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}404 Not Found — NEXORA{% endblock %}
+{% block page_heading %}Resource Not Found{% endblock %}
+{% block content %}
+<div class="soc-card p-5 text-center mx-auto" style="max-width:540px;">
+  <div class="display-4 fw-bold font-mono text-info mb-2">404</div>
+  <h2 class="h5 mb-2">Page or Record Not Found</h2>
+  <p class="text-secondary small mb-4">The requested NEXORA page or security record does not exist.</p>
+  <a href="{{ url_for('dashboard.index') }}" class="btn btn-nexora">Return to Dashboard</a>
+</div>
+{% endblock %}

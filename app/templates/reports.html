@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}Security Reports — NEXORA{% endblock %}
+{% block page_heading %}Security Report Generation{% endblock %}
+{% block page_subheading %}Export branded PDF (ReportLab) and CSV reports populated directly from live NEXORA database telemetry{% endblock %}
+
+{% block content %}
+<div class="soc-card mb-4">
+  <div class="soc-card-header">
+    <h2 class="soc-card-title"><i class="bi bi-file-earmark-plus text-info"></i> Generate New Security Report</h2>
+  </div>
+  <div class="soc-card-body">
+    <form method="post" action="{{ url_for('reports.generate') }}" class="row g-3 align-items-end" data-loading-text="Generating report...">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="col-md-6">
+        <label class="form-label" for="reportType">Report Scope</label>
+        <select class="form-select" id="reportType" name="report_type" required>
+          {% for key, label in report_types.items() %}
+            <option value="{{ key }}">{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label" for="reportFormat">Output Format</label>
+        <select class="form-select" id="reportFormat" name="report_format" required>
+          <option value="pdf">PDF Document (Branded ReportLab)</option>
+          <option value="csv">CSV Data Export</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <button type="submit" class="btn btn-nexora w-100">
+          <i class="bi bi-file-earmark-arrow-down me-1"></i> Generate Report
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Generated Reports Archive -->
+<div class="soc-card">
+  <div class="soc-card-header">
+    <h2 class="soc-card-title"><i class="bi bi-archive text-info"></i> Generated Reports Archive ({{ reports|length }})</h2>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-soc table-hover">
+      <thead>
+        <tr>
+          <th>Report ID</th>
+          <th>Title</th>
+          <th>Format</th>
+          <th>Size</th>
+          <th>Summary</th>
+          <th>Generated</th>
+          <th class="text-end">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in reports %}
+        <tr>
+          <td class="font-mono small text-info">{{ r.report_uid }}</td>
+          <td class="fw-semibold">{{ r.title }}</td>
+          <td>
+            <span class="badge-soc {% if r.report_format == 'pdf' %}severity-high{% else %}severity-info{% endif %} text-uppercase">
+              {{ r.report_format }}
+            </span>
+          </td>
+          <td class="font-mono small text-secondary">{{ r.file_size|format_bytes }}</td>
+          <td class="small text-secondary">{{ r.summary|truncate_text(85) }}</td>
+          <td class="font-mono small text-secondary">{{ r.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+          <td class="text-end text-nowrap">
+            <a href="{{ url_for('reports.download', report_id=r.id) }}" class="btn btn-sm btn-nexora-outline">
+              <i class="bi bi-download me-1"></i>Download
+            </a>
+            <form method="post" action="{{ url_for('reports.delete', report_id=r.id) }}" class="d-inline">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete report">
+                <i class="bi bi-trash"></i>
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="7" class="text-center py-4 text-secondary">No reports generated yet. Select a scope and format above to build your first report.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

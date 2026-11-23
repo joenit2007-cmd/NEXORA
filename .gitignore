@@ -1,0 +1,71 @@
+# Python & Virtual Environments
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+ENV/
+env/
+build/
+dist/
+*.egg-info/
+
+# Environment variables, secrets, keys, and credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*credentials*.json
+*secrets*.json
+
+# Local SQLite databases and runtime uploads
+*.db
+*.sqlite
+*.sqlite3
+instance/*.db
+instance/*.sqlite
+instance/*.sqlite3
+instance/uploads/*
+!instance/uploads/.gitkeep
+!instance/.gitkeep
+
+# Generated reports
+reports/*.pdf
+reports/*.csv
+!reports/.gitkeep
+
+# Demo videos & large local media (never commit videos into repo)
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.webm
+*.wmv
+
+# Testing, caches, and temporary files
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.tmp
+*.temp
+*.bak
+*.swp
+
+# Logs (preserve bundled sample logs)
+*.log
+!sample_data/*.log
+
+# IDE & OS files
+.vscode/
+.idea/
+*.sublime-*
+.DS_Store
+Thumbs.db
+desktop.ini

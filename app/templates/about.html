@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}About NEXORA — Cybersecurity Platform{% endblock %}
+{% block page_heading %}About NEXORA{% endblock %}
+{% block page_subheading %}DETECT. ANALYZE. SECURE. — Integrated Threat Monitoring &amp; Vulnerability Assessment Platform{% endblock %}
+
+{% block content %}
+<div class="soc-card mb-4">
+  <div class="soc-card-body p-4">
+    <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+      <img src="{{ url_for('static', filename='images/nexora-logo.svg') }}" alt="NEXORA Logo" width="56" height="56">
+      <div>
+        <h2 class="h4 fw-bold mb-1" style="letter-spacing:0.12em;color:#00d4ff;">NEXORA v{{ app_version }}</h2>
+        <div class="text-secondary">Cybersecurity Threat Monitoring &amp; Vulnerability Assessment Platform</div>
+      </div>
+    </div>
+    <p class="text-secondary mb-0">
+      NEXORA is an original defensive and authorized offensive security operations platform built with Python 3.13, Flask, SQLAlchemy, Pandas, Scikit-learn, ReportLab, and Nmap. It consolidates intelligent log analysis, local network visibility, authorized port and service assessment, hybrid ML/rule-based phishing detection, centralized alert triage, and executive PDF/CSV reporting into one unified SOC interface.
+    </p>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-4">
+    <div class="soc-card h-100">
+      <div class="soc-card-header"><h3 class="soc-card-title"><i class="bi bi-file-earmark-code text-info"></i> Log Intelligence</h3></div>
+      <div class="soc-card-body small text-secondary">
+        Parses SSH/auth, syslog, and CSV logs passively without execution. Detects failed logins, sliding-window brute-force bursts, password spraying, privilege escalation, and web attack probes.
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="soc-card h-100">
+      <div class="soc-card-header"><h3 class="soc-card-title"><i class="bi bi-radar text-info"></i> Authorized Network &amp; Vulns</h3></div>
+      <div class="soc-card-body small text-secondary">
+        Restricts scanning strictly to localhost and RFC1918 private lab targets with explicit user confirmation. Uses Nmap (or safe TCP socket fallback) and evidence-based service/HTTP header checks without fabricating CVEs.
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="soc-card h-100">
+      <div class="soc-card-header"><h3 class="soc-card-title"><i class="bi bi-envelope-exclamation text-info"></i> Static Phishing Detection</h3></div>
+      <div class="soc-card-body small text-secondary">
+        Combines a reproducible Scikit-learn TF-IDF + Logistic Regression model with transparent lexical URL, sender, and social-engineering heuristics. Never visits or fetches submitted URLs.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-6">
+    <div class="soc-card h-100">
+      <div class="soc-card-header"><h3 class="soc-card-title"><i class="bi bi-shield-check text-info"></i> Ethical &amp; Security Charter</h3></div>
+      <div class="soc-card-body small text-secondary">
+        <ul class="mb-0 ps-3">
+          <li class="mb-1"><strong>Authorized Scope Only:</strong> Public IPs, external domains, and wildcard ranges are rejected server-side.</li>
+          <li class="mb-1"><strong>Non-Destructive:</strong> No exploit payloads, denial-of-service probes, or active credential attacks are implemented.</li>
+          <li class="mb-1"><strong>Transparent Reporting:</strong> Dashboard KPIs, vulnerability evidence, and ML test metrics reflect genuine computed outputs.</li>
+          <li><strong>Defense in Depth:</strong> PBKDF2-SHA256 password hashing, CSRF tokens, strict CSP headers, parameterized ORM queries, and path-traversal guards.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="soc-card h-100">
+      <div class="soc-card-header"><h3 class="soc-card-title"><i class="bi bi-hdd-rack text-info"></i> Runtime Engine Status</h3></div>
+      <div class="soc-card-body small">
+        <div class="d-flex justify-content-between py-2 border-bottom border-secondary-subtle">
+          <span class="text-secondary">Nmap Scanner</span>
+          <span class="font-mono {% if nmap_status.available %}text-success{% else %}text-warning{% endif %}">
+            {{ nmap_status.version if nmap_status.available else 'Python Socket Fallback' }}
+          </span>
+        </div>
+        <div class="d-flex justify-content-between py-2 border-bottom border-secondary-subtle">
+          <span class="text-secondary">Phishing Classifier</span>
+          <span class="font-mono text-info">
+            {% if ml_metrics.available %}TF-IDF + LogReg (Acc: {{ "%.1f"|format(ml_metrics.accuracy * 100) }}%){% else %}Rule-Based Scoring{% endif %}
+          </span>
+        </div>
+        <div class="d-flex justify-content-between py-2">
+          <span class="text-secondary">Health Endpoint</span>
+          <a href="{{ url_for('main.health') }}" class="font-mono text-info text-decoration-none">/health</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,121 @@
+text,label
+"Subject: URGENT Account Suspended! Verify your PayPal password within 24 hours at http://198.51.100.12/paypal-login or your account will be closed immediately.",1
+"Subject: Final Notice: Unauthorized login detected on your Microsoft Office 365 account. Click the link below to confirm your identity immediately.",1
+"Subject: Action Required: Your bank account has been locked due to unusual sign-in activity. Update your billing and verify credentials now.",1
+"Subject: IT Helpdesk Alert: Your corporate mailbox quota exceeded 99%. Validate your mailbox password at https://bit.ly/mail-reset-now before expiration.",1
+"Subject: Wire Transfer Urgent Request from CEO: Please process an immediate wire transfer today and keep this confidential.",1
+"Subject: Amazon Order Problem: Update payment method within 24 hours to avoid account suspension at http://amazon-verify-billing.xyz/login.",1
+"Subject: Apple ID Locked: Suspicious sign-in attempt detected. Confirm your Apple password and security questions immediately.",1
+"Subject: DHL Parcel Delivery Failed: Pay $2.99 customs fee immediately via http://dhl-track-parcel.top/pay to release your package.",1
+"Subject: IRS Tax Refund Pending: Enter your Social Security number and bank routing details to claim your refund today.",1
+"Subject: Netflix Billing Error: Your membership will expire today. Update your credit card details immediately via the secure link below.",1
+"Subject: Important Invoice Attached: Please open the attached invoice_2026.zip file and enable macros to view the overdue statement.",1
+"Subject: HR Department Payroll Update: Verify your direct deposit banking password immediately using http://hr-payroll-update.click/login.",1
+"Subject: Chase Bank Fraud Alert: Confirm recent transaction or log in below within 24 hours to prevent permanent suspension.",1
+"Subject: Security Warning: Your Google Workspace password expires today. Keep your same password by signing in at http://google-auth-check.tk/verify.",1
+"Subject: Congratulations! You have won an international lottery prize. Send your bank details and processing fee to claim your prize.",1
+"Subject: FedEx Shipment On Hold: Download the attached shipping_label.docm and enable content to reschedule delivery.",1
+"Subject: Bank of America Security Center: Unusual wire activity detected. Verify your account number and PIN immediately.",1
+"Subject: Urgent Vendor Payment Change: Our bank details changed, please send the invoice payment via wire transfer immediately.",1
+"Subject: Microsoft Teams Missed Voicemail: Open voicemail_player.exe or sign in with your corporate credentials to listen.",1
+"Subject: DocuSign Document Ready: Review confidential contract by logging in with your email password at http://docusign-secure-view.xyz.",1
+"Subject: Final Warning: Your domain registration will expire in 2 hours. Renew immediately at http://192.0.2.44/renew-card.",1
+"Subject: Urgent Gift Cards Needed: Hi, I am in a meeting and need you to buy 5 Apple gift cards right now and email me the codes.",1
+"Subject: Shared OneDrive File: Click here to sign in with your Office 365 email and password to view Q4 salary adjustments.",1
+"Subject: PayPal Resolution Center: Your account is limited due to suspicious transaction. Verify your SSN and card details now.",1
+"Subject: Dropbox Storage Full: Upgrade immediately or lose files within 24 hours at http://dropbox-storage-alert.ru/verify.",1
+"Subject: Zoom Account Deactivation Notice: Confirm your login credentials below or your Zoom meetings will be canceled today.",1
+"Subject: Wells Fargo Online Alert: Failure to comply with mandatory identity verification will result in account closure.",1
+"Subject: IT Support Password Reset Required: Click https://tinyurl.com/corp-pwd-reset and enter your current password to avoid lockout.",1
+"Subject: Overdue Invoice #9921: Download password-protected archive invoice.zip (password is 1234) to review charges immediately.",1
+"Subject: Crypto Wallet Security Alert: Synchronize your recovery seed phrase immediately to stop unauthorized withdrawal.",1
+"Subject: LinkedIn Security Notice: Someone tried to access your account. Verify your password at http://linkedin-security-check.work.",1
+"Subject: Adobe PDF Shared Document: Enable macros after downloading statement.xlsm to decrypt protected financial report.",1
+"Subject: Urgent Tax Compliance Form: Fill out your SSN, date of birth, and bank login on this verification portal immediately.",1
+"Subject: Suspicious Login From Unknown Device: Act immediately and reset your password via http://203.0.113.99/secure-auth.",1
+"Subject: American Express Card Suspended: Confirm your billing address, CVV, and online password within 12 hours.",1
+"Subject: Corporate VPN Certificate Expired: Download vpn_patch.scr and run immediately to maintain remote network access.",1
+"Subject: Unclaimed Inheritance Notification: Contact our attorney with your personal identification and bank account to claim funds.",1
+"Subject: Slack Workspace Suspension: Validate administrator credentials immediately at http://slack-admin-verify.xyz/auth.",1
+"Subject: GitHub Token Compromise Alert: Click the link below to re-enter your GitHub password and 2FA recovery codes now.",1
+"Subject: Electricity Disconnection Final Notice: Pay overdue balance immediately via untrusted payment link to stop shutoff.",1
+"Subject: Your Email Account Will Be Deleted Today: Re-verify your email login and password here before 5 PM.",1
+"Subject: Urgent CEO Wire Instruction: Transfer $18,500 to our new overseas supplier immediately and do not discuss with finance.",1
+"Subject: Facebook Page Violation Notice: Appeal permanent deletion within 24 hours by logging in at http://fb-appeal-center.top.",1
+"Subject: WhatsApp Cloud Backup Failed: Enter your 6-digit verification code and account password on this external link.",1
+"Subject: Stripe Payout On Hold: Verify your bank account login immediately at http://stripe-verify-merchant.click/login.",1
+"Subject: University Tuition Refund: Click https://bit.ly/edu-refund-claim and submit your debit card PIN for instant deposit.",1
+"Subject: Citrix Portal Mandatory Upgrade: Log in with your Active Directory username and password at http://citrix-update.ml.",1
+"Subject: Norton Antivirus Auto-Renewal $499: Call our urgent support line or click here to enter bank details for refund.",1
+"Subject: Spotify Payment Declined: Update your payment card immediately at http://spotify-billing-fix.ga/card.",1
+"Subject: Important Wire Confirmation Attached: Open confirmation.iso and run the script inside to approve bank transfer.",1
+"Subject: Coinbase Account Frozen: Verify your identity and private recovery keys within 24 hours to unlock your balance.",1
+"Subject: McAfee Subscription Expired: Urgent action required to renew license via http://mcafee-renew-billing.xyz.",1
+"Subject: HR Bonus Eligibility Form: Log in with your corporate email password at http://hr-bonus-portal.support/signin.",1
+"Subject: Bank Security Department: Reply with your ATM PIN and online banking password to stop unauthorized charges.",1
+"Subject: UPS Delivery Exception: Update your address and credit card details immediately at http://ups-redelivery-fee.top.",1
+"Subject: Outlook Web Access Quota Alert: Your incoming emails are held; release them by entering your password at http://owa-auth.cf.",1
+"Subject: Shopify Store Suspended: Immediate verification required at http://shopify-merchant-check.xyz/login.",1
+"Subject: eBay Account Restriction: Confirm identity within 48 hours or face permanent termination via http://ebay-verify-id.ru.",1
+"Subject: Urgent Payroll Direct Deposit Change: Attached form.docm requires enabling macros to process salary.",1
+"Subject: Instagram Copyright Strike: Verify your Instagram login credentials immediately at http://insta-help-appeal.click.",1
+"Subject: Weekly Engineering Standup Notes - Hi team, thanks for joining today's standup. Summary notes and milestone dates are posted on the internal wiki.",0
+"Subject: Q4 Sprint Planning Agenda - Please review the backlog tickets before Tuesday at 10 AM and add any technical dependencies.",0
+"Subject: Lunch & Learn Invitation - Join us this Thursday at noon in Conference Room B for a session on PostgreSQL indexing best practices.",0
+"Subject: Pull Request Review Requested - Could you take a look at PR #214 refactoring the report export utility when you have a moment?",0
+"Subject: Monthly Security Patching Window - Scheduled maintenance for staging servers will occur Saturday from 02:00 to 04:00 UTC.",0
+"Subject: Project NEXORA Documentation Update - I uploaded the revised architecture diagram and testing checklist to the shared repository.",0
+"Subject: Coffee Chat Follow-Up - Great speaking with you yesterday! Attached are the reading recommendations we discussed.",0
+"Subject: Office Closure Reminder - Just a friendly reminder that the office will be closed next Monday for the public holiday.",0
+"Subject: Quarterly All-Hands Slides - For anyone who missed the town hall, the presentation deck and recording are now available on the intranet.",0
+"Subject: Team Outing Poll - Please vote on your preferred restaurant for next Friday's team dinner by Wednesday afternoon.",0
+"Subject: Release v2.4.1 Deployed - The maintenance release completed smoothly with zero regressions reported in staging or production.",0
+"Subject: Internship Capstone Check-In - Hi, let's meet Friday at 3 PM to review your testing report and project presentation slides.",0
+"Subject: Design Review Feedback - Thanks for sharing the dark-theme dashboard mockups. The contrast and typography look clean and readable.",0
+"Subject: Library Book Return Reminder - Your borrowed copy of Applied Cryptography is due back at the campus library next Tuesday.",0
+"Subject: New Hire Welcome - Please join us in welcoming Priya to the backend engineering team starting this Monday.",0
+"Subject: Expense Report Approved - Your travel reimbursement for the October conference has been approved and scheduled for the regular pay cycle.",0
+"Subject: Weekly Metrics Digest - Active builds succeeded at 98.4% this week with average CI runtime down by 14 seconds.",0
+"Subject: Code Freeze Notice - Reminder that the release branch enters feature freeze tomorrow at 18:00 UTC.",0
+"Subject: Python 3.13 Upgrade Notes - We validated unit tests across Flask, SQLAlchemy, and Pandas with no compatibility warnings.",0
+"Subject: Meeting Rescheduled - Moving our architecture sync from 2:00 PM to 3:30 PM today so everyone from QA can attend.",0
+"Subject: Volunteer Day Sign-Up - Our annual community park cleanup is next Saturday morning; reply if you would like a t-shirt.",0
+"Subject: Database Backup Verification - Nightly SQLite and PostgreSQL snapshot integrity checks passed cleanly.",0
+"Subject: Conference Talk Abstract Draft - Here is my first draft for the defensive security workshop. Would appreciate your edits.",0
+"Subject: Happy Birthday Sam! - We are gathering in the kitchen lounge at 4 PM for cake to celebrate Sam's birthday.",0
+"Subject: Travel Itinerary Confirmation - Your flight to Bengaluru departs at 08:15 AM from Terminal 2. Boarding begins 45 minutes prior.",0
+"Subject: Quarterly Budget Forecast - Please submit your department's software license estimates by the 15th of next month.",0
+"Subject: Open Source Dependency Audit - Dependabot checks completed with zero high-severity advisories in requirements.txt.",0
+"Subject: Lab Environment Ready - The isolated private subnet 192.168.56.0/24 is online for authorized vulnerability testing exercises.",0
+"Subject: Book Club Selection - Next month we are reading The Phoenix Project. First discussion session is on the 18th.",0
+"Subject: Parking Permit Renewal Info - Campus parking permits for the spring semester can be renewed in person at the admin desk.",0
+"Subject: UI Accessibility Audit Results - All navigation links now pass WCAG AA contrast ratios and keyboard focus order checks.",0
+"Subject: Client Demo Dry Run - Let's do a 20-minute walkthrough of the SOC dashboard tomorrow morning before the stakeholder demo.",0
+"Subject: Server Monitoring Summary - CPU and memory utilization stayed below 40% across all test containers during load testing.",0
+"Subject: Mentor Office Hours - I have open office hours every Wednesday from 2 PM to 4 PM if you want to discuss career prep.",0
+"Subject: Thank You for Attending - Appreciate everyone's thoughtful questions during today's cybersecurity architecture seminar.",0
+"Subject: Sprint Retrospective Action Items - Top takeaways: expand automated integration tests and document local setup steps clearly.",0
+"Subject: Gym Membership Wellness Benefit - Employees can enroll in the annual fitness reimbursement program through the internal HR portal.",0
+"Subject: API Documentation Published - Swagger specs for the internal health and metrics endpoints are now updated in our repo.",0
+"Subject: Weather Advisory Notice - Heavy rain is forecast for this evening; feel free to work remotely tomorrow if commuting is difficult.",0
+"Subject: Hardware Request Fulfilled - Your replacement USB-C docking station has arrived and is ready for pickup at the IT desk.",0
+"Subject: Graduation Ceremony Schedule - Rehearsal begins at 9:00 AM in the main auditorium; guests may enter starting at 10:30 AM.",0
+"Subject: Performance Test Benchmark - Average page response time measured 42ms under 50 concurrent local test requests.",0
+"Subject: Recipe Swap Thread - Sharing the sourdough bread recipe I mentioned at lunch yesterday.",0
+"Subject: Git Branch Cleanup - Please delete merged feature branches older than 30 days to keep the repository tidy.",0
+"Subject: Research Paper Notes - Summarized key findings from the NIST SP 800-115 technical guide to information security testing.",0
+"Subject: Study Group Session - We are meeting in Room 204 at 5 PM to review network protocols and Wireshark packet captures.",0
+"Subject: Summer Internship Orientation - Welcome packet and first-week schedule are attached as a plain text PDF overview.",0
+"Subject: Customer Feedback Summary - Users highlighted the clear severity badges and one-click CSV exports as favorite features.",0
+"Subject: Quarterly OKR Check-In - Please update progress percentages on your team objectives before Friday's leadership review.",0
+"Subject: Wi-Fi Maintenance Window - Guest Wi-Fi access points on Floor 3 will reboot briefly at 7:00 AM Sunday.",0
+"Subject: Unit Testing Workshop - Slides and pytest fixtures from today's hands-on workshop are available on the shared drive.",0
+"Subject: Hackathon Team Formation - Looking for one frontend developer and one security analyst for this weekend's campus hackathon.",0
+"Subject: Project Milestone Sign-Off - Phase 3 implementation passed all acceptance criteria; moving on to documentation.",0
+"Subject: Monthly Newsletter - Highlights from engineering, product releases, and upcoming community tech meetups.",0
+"Subject: Dentist Appointment Reminder - Friendly reminder of your routine dental cleaning next Thursday at 11:00 AM.",0
+"Subject: Class Assignment Clarification - For Lab 4, please include both unit tests and a short writeup of your methodology.",0
+"Subject: Container Build Optimization - Multi-stage Dockerfile reduced image size from 680MB down to 240MB.",0
+"Subject: Onboarding Checklist Complete - All development tools, virtual environments, and linters are configured and verified.",0
+"Subject: End of Week Update - Completed alert management filters, PDF report tables, and error handling tests. Have a great weekend!",0
+"Subject: Security Architecture Review Notes - Confirmed CSRF tokens, PBKDF2 password hashing, and RFC1918 target validation controls.",0

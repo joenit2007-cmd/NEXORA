@@ -1,0 +1,11 @@
+2026-11-20 13:01:10 app-host02 kernel: Firewall block inbound TCP from 203.0.113.66 to port 23
+2026-11-20 13:02:18 app-host02 webproxy: GET /../../etc/passwd from 203.0.113.66 - Access Denied
+2026-11-20 13:04:05 app-host02 authsvc: Event 4625 Logon Failure user=administrator ip=198.51.100.14
+2026-11-20 13:04:19 app-host02 authsvc: Event 4625 Logon Failure user=administrator ip=198.51.100.14
+2026-11-20 13:04:31 app-host02 authsvc: Event 4625 Logon Failure user=administrator ip=198.51.100.14
+2026-11-20 13:04:48 app-host02 authsvc: Event 4625 Logon Failure user=administrator ip=198.51.100.14
+2026-11-20 13:05:02 app-host02 authsvc: Event 4625 Logon Failure user=administrator ip=198.51.100.14
+2026-11-20 13:10:00 app-host02 dbservice: ERROR connection pool temporarily exhausted on 127.0.0.1
+2026-11-20 13:15:22 app-host02 systemd: Scheduled backup service completed cleanly on 127.0.0.1
+2026-11-20 13:22:45 app-host02 pam_unix: authentication failure; rhost=192.0.2.55 user=backup_admin
+2026-11-20 13:25:11 app-host02 ids-sensor: Possible break-in attempt detected from 203.0.113.66 using nikto scanner

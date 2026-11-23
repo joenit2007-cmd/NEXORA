@@ -1,0 +1,273 @@
+{% extends "base.html" %}
+{% block title %}Network Monitor — NEXORA{% endblock %}
+{% block page_heading %}Network Monitor &amp; Authorized Scanner{% endblock %}
+{% block page_subheading %}Local host interfaces, active sockets, listening services, and Nmap integration for authorized targets{% endblock %}
+
+{% block content %}
+<!-- Nmap Status Banner -->
+<div class="alert {% if nmap_status.available %}alert-success{% else %}alert-warning{% endif %} py-2 px-3 small d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4">
+  <div class="d-flex align-items-center gap-2">
+    <i class="bi {% if nmap_status.available %}bi-check-circle-fill{% else %}bi-exclamation-triangle-fill{% endif %}"></i>
+    <div>
+      <strong>Scanner Engine:</strong> {{ nmap_status.message }}
+      {% if nmap_status.path %}<span class="font-mono text-secondary ms-1">({{ nmap_status.path }})</span>{% endif %}
+    </div>
+  </div>
+  <span class="badge-soc severity-info"><i class="bi bi-shield-check"></i> Authorized Local / RFC1918 Private Lab Only</span>
+</div>
+
+<!-- Host Info + Authorized Scan Form -->
+<div class="row g-3 mb-4">
+  <div class="col-lg-5">
+    <div class="soc-card h-100">
+      <div class="soc-card-header">
+        <h2 class="soc-card-title"><i class="bi bi-pc-display text-info"></i> Local Host Identity</h2>
+        <span class="small font-mono text-info">{{ local_info.primary_ip }}</span>
+      </div>
+      <div class="soc-card-body">
+        <div class="row g-2 mb-3">
+          <div class="col-6">
+            <div class="p-2 rounded bg-dark bg-opacity-50 border border-secondary-subtle">
+              <div class="small text-secondary">Hostname</div>
+              <div class="font-mono fw-semibold text-truncate">{{ local_info.hostname }}</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="p-2 rounded bg-dark bg-opacity-50 border border-secondary-subtle">
+              <div class="small text-secondary">Operating System</div>
+              <div class="font-mono small text-truncate">{{ local_info.os }}</div>
+            </div>
+          </div>
+        </div>
+        <div class="table-responsive" style="max-height:230px;">
+          <table class="table table-soc table-sm">
+            <thead>
+              <tr>
+                <th>Interface</th>
+                <th>IPv4</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for iface in local_info.interfaces %}
+              <tr>
+                <td class="small fw-medium">{{ iface.name }}</td>
+                <td class="font-mono small text-info">{{ iface.ipv4 }}</td>
+                <td>
+                  {% if iface.is_up %}
+                    <span class="badge-soc severity-low">UP</span>
+                  {% else %}
+                    <span class="badge-soc severity-info">DOWN</span>
+                  {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Authorized Network Scanner Form -->
+  <div class="col-lg-7">
+    <div class="soc-card h-100">
+      <div class="soc-card-header">
+        <h2 class="soc-card-title"><i class="bi bi-radar text-info"></i> Authorized Target Network Scan</h2>
+        <div class="d-flex gap-1">
+          <button type="button" class="btn btn-sm btn-outline-info py-0 px-2" data-target-preset="127.0.0.1" data-ports-preset="22,80,135,443,445,3306,5000,8000,8080">Localhost Preset</button>
+        </div>
+      </div>
+      <div class="soc-card-body">
+        <form method="post" action="{{ url_for('network.scan') }}" data-loading-text="Running authorized scan...">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <div class="row g-3 mb-3">
+            <div class="col-md-5">
+              <label class="form-label" for="scanTargetInput">Authorized Target IP / Host</label>
+              <input type="text" class="form-control font-mono" id="scanTargetInput" name="target" value="127.0.0.1" required placeholder="127.0.0.1 or 192.168.x.x">
+              <div class="form-text text-secondary">Strictly localhost or RFC1918 private lab IPs only.</div>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label" for="scanType">Scan Profile</label>
+              <select class="form-select" id="scanType" name="scan_type">
+                <option value="quick_ports">TCP Port Discovery (-sT)</option>
+                <option value="service_version">Service &amp; Version Detection (-sV)</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label" for="scanPortsInput">Ports (Optional)</label>
+              <input type="text" class="form-control font-mono" id="scanPortsInput" name="port_spec" placeholder="22,80,443,5000">
+            </div>
+          </div>
+
+          <div class="form-check mb-3 p-2 px-3 rounded border border-info-subtle bg-dark bg-opacity-50">
+            <input class="form-check-input ms-0 me-2" type="checkbox" id="authorizedConfirmed" name="authorized_confirmed" required>
+            <label class="form-check-label small" for="authorizedConfirmed">
+              I confirm that I own or have explicit written authorization to scan this local/private lab target, and understand public scanning is prohibited.
+            </label>
+          </div>
+
+          <button type="submit" class="btn btn-nexora">
+            <i class="bi bi-broadcast me-1"></i> Launch Authorized Scan
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Selected Scan Results + Scan History -->
+<div class="row g-3 mb-4">
+  <div class="col-lg-7">
+    <div class="soc-card h-100">
+      <div class="soc-card-header">
+        <h2 class="soc-card-title"><i class="bi bi-door-open text-info"></i> Discovered Open Ports &amp; Services</h2>
+        {% if selected_scan %}
+          <span class="font-mono small text-info">{{ selected_scan.target }} ({{ selected_scan.tool_used }})</span>
+        {% endif %}
+      </div>
+      <div class="soc-card-body">
+        {% if selected_scan %}
+          <p class="small text-secondary mb-3">{{ selected_scan.summary }}</p>
+          <div class="table-responsive">
+            <table class="table table-soc">
+              <thead>
+                <tr>
+                  <th>Port</th>
+                  <th>Protocol</th>
+                  <th>State</th>
+                  <th>Service</th>
+                  <th>Detected Version / Banner</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for port in selected_scan.open_ports %}
+                <tr>
+                  <td class="font-mono fw-bold text-info">{{ port.port }}</td>
+                  <td class="font-mono small text-uppercase">{{ port.protocol }}</td>
+                  <td><span class="badge-soc severity-low">{{ port.state }}</span></td>
+                  <td class="font-mono">{{ port.service }}</td>
+                  <td class="small text-secondary font-mono">{{ port.version }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                  <td colspan="5" class="text-center py-3 text-secondary">No open TCP ports detected in the scanned port range.</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <p class="text-secondary text-center py-4 mb-0">Run an authorized target scan above to view discovered open ports and service versions.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-5">
+    <div class="soc-card h-100">
+      <div class="soc-card-header">
+        <h2 class="soc-card-title"><i class="bi bi-clock-history text-info"></i> Scan History</h2>
+      </div>
+      <div class="table-responsive" style="max-height:340px;">
+        <table class="table table-soc table-hover table-sm">
+          <thead>
+            <tr>
+              <th>Target</th>
+              <th>Engine</th>
+              <th>Ports</th>
+              <th>Timestamp</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for s in scans %}
+            <tr class="{% if selected_scan and selected_scan.id == s.id %}table-active{% endif %}">
+              <td class="font-mono small text-info">{{ s.target }}</td>
+              <td class="small">{{ s.tool_used }}</td>
+              <td class="font-mono">{{ s.open_ports_count }}</td>
+              <td class="font-mono small text-secondary">{{ s.created_at.strftime('%m-%d %H:%M') }}</td>
+              <td class="text-end"><a href="{{ url_for('network.index', scan_id=s.id) }}" class="btn btn-sm btn-outline-info py-0 px-2">View</a></td>
+            </tr>
+            {% else %}
+            <tr><td colspan="5" class="text-center py-3 text-secondary small">No scans stored yet.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Listening Services & Active Connections -->
+<div class="row g-3">
+  <div class="col-lg-6">
+    <div class="soc-card">
+      <div class="soc-card-header">
+        <h2 class="soc-card-title"><i class="bi bi-ear text-info"></i> Listening Services ({{ conn_info.listening_count }})</h2>
+      </div>
+      {% if conn_info.permission_note %}
+        <div class="px-3 pt-2 small text-warning">{{ conn_info.permission_note }}</div>
+      {% endif %}
+      <div class="table-responsive" style="max-height:320px;">
+        <table class="table table-soc table-sm">
+          <thead>
+            <tr>
+              <th>Proto</th>
+              <th>Local Address</th>
+              <th>Port</th>
+              <th>Process</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for c in conn_info.listening %}
+            <tr>
+              <td class="font-mono small">{{ c.protocol }}</td>
+              <td class="font-mono small">{{ c.local_ip }}</td>
+              <td class="font-mono fw-semibold text-info">{{ c.local_port }}</td>
+              <td class="small text-secondary">{{ c.process }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="4" class="text-center py-3 text-secondary small">No listening sockets visible with current permissions.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-6">
+    <div class="soc-card">
+      <div class="soc-card-header">
+        <h2 class="soc-card-title"><i class="bi bi-ethernet text-info"></i> Active Network Connections ({{ conn_info.active_count }})</h2>
+      </div>
+      <div class="table-responsive" style="max-height:320px;">
+        <table class="table table-soc table-sm">
+          <thead>
+            <tr>
+              <th>Proto</th>
+              <th>Local</th>
+              <th>Remote</th>
+              <th>State</th>
+              <th>Process</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for c in conn_info.active %}
+            <tr>
+              <td class="font-mono small">{{ c.protocol }}</td>
+              <td class="font-mono small">{{ c.local_ip }}:{{ c.local_port }}</td>
+              <td class="font-mono small text-info">{{ c.remote_ip }}:{{ c.remote_port }}</td>
+              <td><span class="badge-soc severity-info">{{ c.state }}</span></td>
+              <td class="small text-secondary">{{ c.process }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="5" class="text-center py-3 text-secondary small">No active connections visible.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

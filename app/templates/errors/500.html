@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}500 Server Error — NEXORA{% endblock %}
+{% block page_heading %}Internal Platform Error{% endblock %}
+{% block content %}
+<div class="soc-card p-5 text-center mx-auto" style="max-width:540px;">
+  <div class="display-4 fw-bold font-mono text-danger mb-2">500</div>
+  <h2 class="h5 mb-2">Unexpected Server Condition</h2>
+  <p class="text-secondary small mb-4">An internal error occurred while processing your request. Diagnostic details have been suppressed for security.</p>
+  <a href="{{ url_for('dashboard.index') }}" class="btn btn-nexora">Return to Dashboard</a>
+</div>
+{% endblock %}

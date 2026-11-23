@@ -1,0 +1,12 @@
+timestamp,source_ip,username,event_type,severity,message
+2026-11-20 08:00:10,192.168.1.24,jdoe,Successful Login,Low,User authenticated via SSO portal
+2026-11-20 08:05:12,198.51.100.90,admin,Failed Login,Medium,Invalid password submitted to web admin login
+2026-11-20 08:05:24,198.51.100.90,admin,Failed Login,Medium,Invalid password submitted to web admin login
+2026-11-20 08:05:39,198.51.100.90,admin,Failed Login,Medium,Invalid password submitted to web admin login
+2026-11-20 08:05:51,198.51.100.90,admin,Failed Login,Medium,Invalid password submitted to web admin login
+2026-11-20 08:06:04,198.51.100.90,admin,Failed Login,Medium,Invalid password submitted to web admin login
+2026-11-20 08:06:18,198.51.100.90,admin,Failed Login,Medium,Invalid password submitted to web admin login
+2026-11-20 08:12:44,203.0.113.19,web-client,HTTP Request,High,GET /login?user=admin' OR '1'='1 HTTP/1.1
+2026-11-20 08:14:02,203.0.113.19,web-client,HTTP Request,High,GET /search?q=<script>alert(1)</script> HTTP/1.1
+2026-11-20 08:30:00,192.168.1.40,ops_user,Privilege Escalation,Medium,User invoked sudo for configuration update
+2026-11-20 09:00:15,192.168.1.12,analyst1,Successful Login,Low,Normal dashboard session established

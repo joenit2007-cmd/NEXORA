@@ -1,0 +1,21 @@
+2026-11-20 02:14:01 auth-srv01 sshd[4102]: Failed password for root from 203.0.113.45 port 51204 ssh2
+2026-11-20 02:14:12 auth-srv01 sshd[4105]: Failed password for root from 203.0.113.45 port 51208 ssh2
+2026-11-20 02:14:25 auth-srv01 sshd[4108]: Failed password for invalid user admin from 203.0.113.45 port 51212 ssh2
+2026-11-20 02:14:39 auth-srv01 sshd[4111]: Failed password for root from 203.0.113.45 port 51218 ssh2
+2026-11-20 02:14:51 auth-srv01 sshd[4114]: Invalid user backup from 203.0.113.45 port 51225 ssh2
+2026-11-20 02:15:04 auth-srv01 sshd[4117]: Failed password for invalid user backup from 203.0.113.45 port 51225 ssh2
+2026-11-20 02:15:18 auth-srv01 sshd[4120]: Failed password for root from 203.0.113.45 port 51230 ssh2
+2026-11-20 02:15:33 auth-srv01 sshd[4123]: Failed password for invalid user oracle from 203.0.113.45 port 51241 ssh2
+2026-11-20 02:16:02 auth-srv01 sshd[4128]: Accepted publickey for devops from 192.168.10.22 port 49812 ssh2
+2026-11-20 02:18:10 auth-srv01 sshd[4133]: Failed password for alice from 198.51.100.77 port 60101 ssh2
+2026-11-20 02:18:45 auth-srv01 sshd[4136]: Failed password for bob from 198.51.100.77 port 60110 ssh2
+2026-11-20 02:19:15 auth-srv01 sshd[4139]: Failed password for charlie from 198.51.100.77 port 60118 ssh2
+2026-11-20 02:19:50 auth-srv01 sshd[4142]: Failed password for deploy from 198.51.100.77 port 60129 ssh2
+2026-11-20 02:21:11 auth-srv01 sshd[4150]: Accepted password for root from 192.168.10.15 port 53011 ssh2
+2026-11-20 02:22:05 auth-srv01 sudo: devops : TTY=pts/0 ; PWD=/home/devops ; USER=root ; COMMAND=/bin/cat /etc/shadow
+2026-11-20 09:05:14 auth-srv01 sshd[4210]: Accepted publickey for analyst from 192.168.10.30 port 54022 ssh2
+2026-11-20 09:12:40 auth-srv01 sudo: analyst : TTY=pts/1 ; PWD=/home/analyst ; USER=root ; COMMAND=/usr/bin/systemctl status nginx
+2026-11-20 10:15:02 auth-srv01 sshd[4250]: Failed password for svc_monitor from 192.0.2.88 port 48112 ssh2
+2026-11-20 10:15:35 auth-srv01 sshd[4254]: Failed password for svc_monitor from 192.0.2.88 port 48119 ssh2
+2026-11-20 10:16:12 auth-srv01 sshd[4259]: Failed password for svc_monitor from 192.0.2.88 port 48126 ssh2
+2026-11-20 11:02:19 auth-srv01 sshd[4301]: Accepted publickey for secops from 192.168.10.45 port 55100 ssh2

@@ -1,0 +1,28 @@
+# Render Blueprint Configuration for NEXORA
+# Do NOT deploy until local verification and approval are complete.
+
+services:
+  - type: web
+    name: nexora-security-platform
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: starter
+    healthCheckPath: /health
+    autoDeploy: false
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: SESSION_COOKIE_SECURE
+        value: "true"
+      - key: WTF_CSRF_ENABLED
+        value: "true"
+      - key: DATABASE_URL
+        value: sqlite:////var/data/nexora.db
+      - key: MAX_CONTENT_LENGTH
+        value: "5242880"
+    disk:
+      name: nexora-data
+      mountPath: /var/data
+      sizeGB: 1

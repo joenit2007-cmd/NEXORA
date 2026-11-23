@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+{% block title %}Settings — NEXORA{% endblock %}
+{% block page_heading %}Platform &amp; Operator Settings{% endblock %}
+{% block page_subheading %}Configure detection thresholds, update credentials, inspect scanner diagnostics, and manage RBAC roles{% endblock %}
+
+{% block content %}
+<div class="row g-3 mb-4">
+  <!-- Detection Thresholds -->
+  <div class="col-lg-6">
+    <div class="soc-card h-100">
+      <div class="soc-card-header">
+        <h2 class="soc-card-title"><i class="bi bi-sliders text-info"></i> Log Detection Thresholds</h2>
+      </div>
+      <div class="soc-card-body">
+        <form method="post" action="{{ url_for('settings.update_thresholds') }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <div class="mb-3">
+            <label class="form-label" for="bfThreshold">Brute-Force Threshold (Failed Logins per IP)</label>
+            <input type="number" class="form-control font-mono" id="bfThreshold" name="brute_force_threshold" min="2" max="100" value="{{ current_user.brute_force_threshold }}" required>
+            <div class="form-text text-secondary">Triggers a Brute-Force Alert when one IP reaches this failure count inside the window.</div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="bfWindow">Sliding Time Window (Minutes)</label>
+            <input type="number" class="form-control font-mono" id="bfWindow" name="brute_force_window_minutes" min="1" max="1440" value="{{ current_user.brute_force_window_minutes }}" required>
+          </div>
+          <button type="submit" class="btn btn-nexora">Save Detection Settings</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Password Update -->
+  <div class="col-lg-6">
+    <div class="soc-card h-100">
+      <div class="soc-card-header">
+        <h2 class="soc-card-title"><i class="bi bi-key text-info"></i> Account Security &amp; Password</h2>
+      </div>
+      <div class="soc-card-body">
+        <form method="post" action="{{ url_for('settings.update_password') }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <div class="mb-3">
+            <label class="form-label" for="currentPassword">Current Password</label>
+            <input type="password" class="form-control" id="currentPassword" name="current_password" required>
+          </div>
+          <div class="row g-2 mb-3">
+            <div class="col-md-6">
+              <label class="form-label" for="newPassword">New Password</label>
+              <input type="password" class="form-control" id="newPassword" name="new_password" minlength="8" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label" for="confirmPassword">Confirm New Password</label>
+              <input type="password" class="form-control" id="confirmPassword" name="confirm_password" minlength="8" required>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-nexora-outline">Update Password</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Diagnostics & Demo Data Controls -->
+<div class="row g-3 mb-4">
+  <div class="col-lg-6">
+    <div class="soc-card h-100">
+      <div class="soc-card-header">
+        <h2 class="soc-card-title"><i class="bi bi-cpu text-info"></i> Environment Diagnostics</h2>
+      </div>
+      <div class="soc-card-body small">
+        <div class="d-flex justify-content-between py-2 border-bottom border-secondary-subtle">
+          <span class="text-secondary">Operator Account</span>
+          <span class="font-mono">{{ current_user.username }} ({{ current_user.email }})</span>
+        </div>
+        <div class="d-flex justify-content-between py-2 border-bottom border-secondary-subtle">
+          <span class="text-secondary">Assigned Role</span>
+          <span class="badge-soc severity-info text-uppercase">{{ current_user.role }}</span>
+        </div>
+        <div class="d-flex justify-content-between py-2 border-bottom border-secondary-subtle">
+          <span class="text-secondary">Nmap Integration</span>
+          <span class="font-mono {% if nmap_status.available %}text-success{% else %}text-warning{% endif %}">
+            {{ nmap_status.version if nmap_status.available else 'Fallback Mode (Nmap Not Found)' }}
+          </span>
+        </div>
+        <div class="d-flex justify-content-between py-2">
+          <span class="text-secondary">Upload Limit</span>
+          <span class="font-mono">5 MB (.log, .txt, .csv)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-6">
+    <div class="soc-card h-100">
+      <div class="soc-card-header">
+        <h2 class="soc-card-title"><i class="bi bi-database text-info"></i> Demonstration Data Controls</h2>
+      </div>
+      <div class="soc-card-body">
+        <p class="small text-secondary mb-3">
+          Load or remove clearly tagged <code>[DEMO]</code> telemetry records generated by executing NEXORA's actual engines over bundled sample datasets.
+        </p>
+        <div class="d-flex gap-2">
+          <form method="post" action="{{ url_for('dashboard.load_demo') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="btn btn-sm btn-nexora">Load Demo Dataset</button>
+          </form>
+          <form method="post" action="{{ url_for('dashboard.clear_demo') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="btn btn-sm btn-outline-danger">Remove All Demo Records</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% if current_user.is_admin %}
+<div class="soc-card">
+  <div class="soc-card-header">
+    <h2 class="soc-card-title"><i class="bi bi-people text-info"></i> Admin Role-Based Access Control (RBAC)</h2>
+    <span class="badge-soc severity-info">Admin Only</span>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-soc">
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>Email</th>
+          <th>Current Role</th>
+          <th>Created</th>
+          <th class="text-end">Update Role</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in users %}
+        <tr>
+          <td class="font-mono fw-semibold">{{ u.username }}</td>
+          <td class="small text-secondary">{{ u.email }}</td>
+          <td><span class="badge-soc {% if u.role == 'admin' %}severity-high{% else %}severity-info{% endif %} text-uppercase">{{ u.role }}</span></td>
+          <td class="font-mono small text-secondary">{{ u.created_at.strftime('%Y-%m-%d') }}</td>
+          <td class="text-end">
+            <form method="post" action="{{ url_for('settings.update_user_role', user_id=u.id) }}" class="d-inline-flex gap-2 align-items-center">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <select name="role" class="form-select form-select-sm" style="width:120px;">
+                <option value="analyst" {% if u.role == 'analyst' %}selected{% endif %}>Analyst</option>
+                <option value="admin" {% if u.role == 'admin' %}selected{% endif %}>Admin</option>
+              </select>
+              <button type="submit" class="btn btn-sm btn-nexora-outline">Save</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

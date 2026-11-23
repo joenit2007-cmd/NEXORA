@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% block title %}Log Analysis #{{ analysis.id }} — NEXORA{% endblock %}
+{% block page_heading %}Log Investigation: {{ analysis.original_filename }}{% endblock %}
+{% block page_subheading %}Analyzed {{ analysis.created_at.strftime('%Y-%m-%d %H:%M:%S UTC') }} &bull; Threshold: {{ analysis.threshold_config.get('brute_force_threshold', 5) }} failures / {{ analysis.threshold_config.get('window_minutes', 10) }}m{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+  <a href="{{ url_for('logs.index') }}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Back to Log Analyzer</a>
+  <div class="d-flex gap-2">
+    <a href="{{ url_for('logs.export_csv', analysis_id=analysis.id) }}" class="btn btn-sm btn-nexora">
+      <i class="bi bi-filetype-csv me-1"></i>Export Events CSV
+    </a>
+  </div>
+</div>
+
+<!-- Summary KPIs -->
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-3">
+    <div class="kpi-card" style="--kpi-accent:#00d4ff;">
+      <div class="kpi-label">Total Lines / Events</div>
+      <div class="kpi-value font-mono">{{ analysis.total_lines }} <span class="fs-6 text-secondary">/ {{ analysis.parsed_events }}</span></div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="kpi-card" style="--kpi-accent:#eab308;">
+      <div class="kpi-label">Failed Logins</div>
+      <div class="kpi-value font-mono text-warning">{{ analysis.failed_logins }}</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="kpi-card" style="--kpi-accent:#ef4444;">
+      <div class="kpi-label">Brute-Force Patterns</div>
+      <div class="kpi-value font-mono text-danger">{{ analysis.brute_force_count }}</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="kpi-card" style="--kpi-accent:#a855f7;">
+      <div class="kpi-label">Suspicious IPs</div>
+      <div class="kpi-value font-mono">{{ analysis.suspicious_ips|length }}</div>
+    </div>
+  </div>
+</div>
+
+<!-- Suspicious IPs Table -->
+{% if analysis.suspicious_ips %}
+<div class="soc-card mb-4">
+  <div class="soc-card-header">
+    <h2 class="soc-card-title"><i class="bi bi-exclamation-triangle-fill text-danger"></i> Identified Suspicious IP Addresses</h2>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-soc">
+      <thead>
+        <tr>
+          <th>Source IP</th>
+          <th>Classification</th>
+          <th>Severity</th>
+          <th>Total Failures</th>
+          <th>Peak in Window</th>
+          <th>Targeted Users</th>
+          <th>Time Span</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for ip in analysis.suspicious_ips %}
+        <tr>
+          <td class="font-mono fw-semibold text-info">{{ ip.ip }}</td>
+          <td>{{ ip.classification }}</td>
+          <td><span class="badge-soc {{ severity_badge(ip.severity) }}">{{ ip.severity }}</span></td>
+          <td class="font-mono">{{ ip.failed_attempts }}</td>
+          <td class="font-mono text-danger">{{ ip.peak_in_window }}</td>
+          <td class="font-mono small">{{ ip.targeted_users|join(', ') or 'N/A' }}</td>
+          <td class="font-mono small text-secondary">{{ ip.first_seen }} &rarr; {{ ip.last_seen }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+
+<!-- Filter Bar + Parsed Events -->
+<div class="soc-card">
+  <div class="soc-card-header flex-wrap">
+    <h2 class="soc-card-title"><i class="bi bi-journal-code text-info"></i> Parsed Log Events ({{ events|length }})</h2>
+    <form method="get" class="d-flex flex-wrap gap-2">
+      <select name="severity" class="form-select form-select-sm" style="width:140px;">
+        <option value="">All Severities</option>
+        {% for sev in ['Critical', 'High', 'Medium', 'Low'] %}
+          <option value="{{ sev }}" {% if severity_filter == sev %}selected{% endif %}>{{ sev }}</option>
+        {% endfor %}
+      </select>
+      <input type="text" name="q" value="{{ search_q }}" class="form-control form-control-sm" style="width:200px;" placeholder="Filter IP, user, reason...">
+      <button type="submit" class="btn btn-sm btn-nexora-outline">Filter</button>
+    </form>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-soc table-hover">
+      <thead>
+        <tr>
+          <th>Timestamp</th>
+          <th>IP Address</th>
+          <th>Username</th>
+          <th>Event Type</th>
+          <th>Severity</th>
+          <th>Detection Reason</th>
+          <th>Recommended Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for ev in events %}
+        <tr>
+          <td class="font-mono small text-secondary">{{ ev.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+          <td class="font-mono small text-info">{{ ev.source_ip or 'N/A' }}</td>
+          <td class="font-mono small">{{ ev.username or 'N/A' }}</td>
+          <td class="fw-medium">{{ ev.event_type }}</td>
+          <td><span class="badge-soc {{ severity_badge(ev.severity) }}">{{ ev.severity }}</span></td>
+          <td class="small">{{ ev.detection_reason }}</td>
+          <td class="small text-secondary">{{ ev.recommended_action }}</td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="7" class="text-center py-4 text-secondary">No events match the current filter.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

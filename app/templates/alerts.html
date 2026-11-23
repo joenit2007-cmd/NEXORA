@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+{% block title %}Security Alerts — NEXORA{% endblock %}
+{% block page_heading %}Centralized Security Alert Management{% endblock %}
+{% block page_subheading %}Triage, filter, review, and resolve alerts generated across all NEXORA detection engines{% endblock %}
+
+{% block content %}
+<!-- Alert KPI Strip -->
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-2">
+    <div class="kpi-card" style="--kpi-accent:#00d4ff;">
+      <div class="kpi-label">Total Alerts</div>
+      <div class="kpi-value font-mono">{{ summary.total }}</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-2">
+    <div class="kpi-card" style="--kpi-accent:#ef4444;">
+      <div class="kpi-label">Open</div>
+      <div class="kpi-value font-mono text-danger">{{ summary.open }}</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-2">
+    <div class="kpi-card" style="--kpi-accent:#eab308;">
+      <div class="kpi-label">Reviewed</div>
+      <div class="kpi-value font-mono text-warning">{{ summary.reviewed }}</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-2">
+    <div class="kpi-card" style="--kpi-accent:#22c55e;">
+      <div class="kpi-label">Resolved</div>
+      <div class="kpi-value font-mono text-success">{{ summary.resolved }}</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-2">
+    <div class="kpi-card" style="--kpi-accent:#ef4444;">
+      <div class="kpi-label">Critical</div>
+      <div class="kpi-value font-mono">{{ summary.critical }}</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-2">
+    <div class="kpi-card" style="--kpi-accent:#f97316;">
+      <div class="kpi-label">High</div>
+      <div class="kpi-value font-mono">{{ summary.high }}</div>
+    </div>
+  </div>
+</div>
+
+<!-- Filters & Export -->
+<div class="soc-card mb-4">
+  <div class="soc-card-body py-3">
+    <form method="get" action="{{ url_for('alerts.index') }}" class="row g-2 align-items-center">
+      <div class="col-md-3">
+        <input type="text" name="q" value="{{ filters.q }}" class="form-control form-control-sm" placeholder="Search Alert ID, title, IP...">
+      </div>
+      <div class="col-md-2">
+        <select name="severity" class="form-select form-select-sm">
+          <option value="">All Severities</option>
+          {% for sev in ['Critical', 'High', 'Medium', 'Low'] %}
+            <option value="{{ sev }}" {% if filters.severity == sev %}selected{% endif %}>{{ sev }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2">
+        <select name="status" class="form-select form-select-sm">
+          <option value="">All Statuses</option>
+          {% for st in ['Open', 'Reviewed', 'Resolved'] %}
+            <option value="{{ st }}" {% if filters.status == st %}selected{% endif %}>{{ st }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2">
+        <select name="module" class="form-select form-select-sm">
+          <option value="">All Modules</option>
+          {% for mod in ['Log Analyzer', 'Network Monitor', 'Vulnerability Assessment', 'Phishing Analyzer', 'Authentication'] %}
+            <option value="{{ mod }}" {% if filters.module == mod %}selected{% endif %}>{{ mod }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-3 d-flex gap-2 justify-content-md-end">
+        <button type="submit" class="btn btn-sm btn-nexora">Filter</button>
+        <a href="{{ url_for('alerts.index') }}" class="btn btn-sm btn-outline-secondary">Reset</a>
+        <a href="{{ url_for('alerts.export_csv', **filters) }}" class="btn btn-sm btn-nexora-outline" title="Export filtered alerts as CSV">
+          <i class="bi bi-download"></i> CSV
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Alerts Table -->
+<div class="soc-card">
+  <div class="soc-card-header">
+    <h2 class="soc-card-title"><i class="bi bi-exclamation-octagon text-info"></i> Alert Queue ({{ alerts|length }})</h2>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-soc table-hover">
+      <thead>
+        <tr>
+          <th>Alert ID</th>
+          <th>Severity</th>
+          <th>Status</th>
+          <th>Incident Details</th>
+          <th>Source / Target</th>
+          <th>Detected</th>
+          <th class="text-end">Triage Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in alerts %}
+        <tr>
+          <td class="font-mono small text-info fw-semibold">{{ a.alert_uid }}</td>
+          <td><span class="badge-soc {{ severity_badge(a.severity) }}">{{ a.severity }}</span></td>
+          <td><span class="badge-soc status-{{ a.status|lower }}">{{ a.status }}</span></td>
+          <td style="max-width:360px;">
+            <div class="fw-semibold">{{ a.title }}</div>
+            <div class="small text-secondary">{{ a.description|truncate_text(130) }}</div>
+            {% if a.recommended_action %}
+              <div class="small text-info mt-1"><i class="bi bi-lightbulb me-1"></i>{{ a.recommended_action|truncate_text(110) }}</div>
+            {% endif %}
+          </td>
+          <td class="small font-mono">
+            <div>{{ a.source_module }}</div>
+            <div class="text-secondary">{{ a.source_ip or a.target or 'N/A' }}</div>
+          </td>
+          <td class="font-mono small text-secondary">
+            {{ a.created_at.strftime('%Y-%m-%d %H:%M') }}
+            {% if a.resolved_at %}
+              <div class="text-success" style="font-size:0.7rem;">Resolved {{ a.resolved_at.strftime('%m-%d %H:%M') }}</div>
+            {% elif a.reviewed_at %}
+              <div class="text-warning" style="font-size:0.7rem;">Reviewed {{ a.reviewed_at.strftime('%m-%d %H:%M') }}</div>
+            {% endif %}
+          </td>
+          <td class="text-end text-nowrap">
+            {% if a.status != 'Reviewed' and a.status != 'Resolved' %}
+            <form method="post" action="{{ url_for('alerts.change_status', alert_id=a.id) }}" class="d-inline">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <input type="hidden" name="status" value="Reviewed">
+              <button type="submit" class="btn btn-sm btn-outline-warning">Mark Reviewed</button>
+            </form>
+            {% endif %}
+            {% if a.status != 'Resolved' %}
+            <form method="post" action="{{ url_for('alerts.change_status', alert_id=a.id) }}" class="d-inline">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <input type="hidden" name="status" value="Resolved">
+              <button type="submit" class="btn btn-sm btn-outline-success">Resolve</button>
+            </form>
+            {% else %}
+            <form method="post" action="{{ url_for('alerts.change_status', alert_id=a.id) }}" class="d-inline">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <input type="hidden" name="status" value="Open">
+              <button type="submit" class="btn btn-sm btn-outline-secondary">Reopen</button>
+            </form>
+            {% endif %}
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="7" class="text-center py-4 text-secondary">No security alerts match your criteria.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
